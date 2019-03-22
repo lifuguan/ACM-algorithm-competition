@@ -1,4 +1,4 @@
-前言
+# 前言
 最近在牛客网上做了几套公司的真题，发现有关动态规划（Dynamic Programming）算法的题目很多。相对于我来说，算法里面遇到的问题里面感觉最难的也就是动态规划（Dynamic Programming）算法了，于是花了好长时间，查找了相关的文献和资料准备彻底的理解动态规划（Dynamic Programming）算法。一是帮助自己总结知识点，二是也能够帮助他人更好的理解这个算法。后面的参考文献只是我看到的文献的一部分。
 
 动态规划算法的核心
@@ -45,37 +45,49 @@ public int fib(int n)
 ```
 先来分析一下递归算法的执行流程，假如输入6，那么执行的递归树如下：
 
- 
+ ![pic2](https://img-blog.csdn.net/20170715205029376?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzMwOTg3MA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 上面的递归树中的每一个子节点都会执行一次，很多重复的节点被执行，fib(2)被重复执行了5次。由于调用每一个函数的时候都要保留上下文，所以空间上开销也不小。这么多的子节点被重复执行，如果在执行的时候把执行过的子节点保存起来，后面要用到的时候直接查表调用的话可以节约大量的时间。下面就看看动态规划的两种方法怎样来解决斐波拉契数列Fibonacci 数列问题。
 
-①自顶向下的备忘录法
+### ①自顶向下的备忘录法
 ```C++
-public static int Fibonacci(int n)
+#include <iostream>
+using namespace std;
+int fib(int n, int Memo[])
 {
-        if(n<=0)
-            return n;
-        int []Memo=new int[n+1];        
-        for(int i=0;i<=n;i++)
-            Memo[i]=-1;
-        return fib(n, Memo);
-    }
-    public static int fib(int n,int []Memo)
-    {
 
-        if(Memo[n]!=-1)
-            return Memo[n];
-    //如果已经求出了fib（n）的值直接返回，否则将求出的值保存在Memo备忘录中。               
-        if(n<=2)
-            Memo[n]=1;
+	//if语句的作用：如果已经求出了fib（n）的值直接返回，否则将求出的值保存在Memo备忘录中。
+	if (Memo[n] != -1)
+		return Memo[n];
+	
+	if (n <= 2)
+		Memo[n] = 1;
+	else
+		Memo[n] = fib(n - 1, Memo) + fib(n - 2, Memo);
 
-        else Memo[n]=fib( n-1,Memo)+fib(n-2,Memo);  
+	return Memo[n];
+}
+int Fibonacci(int n)
+{
+	if (n <= 0)
+		return n;
+	int Memo[n + 1];
+	for (int i = 0; i <= n; i++)
+	{
+		Memo[i] = -1;
+	}
+	return fib(n, Memo);  //进入递归
+}
 
-        return Memo[n];
-    }
+int main()
+{
+	Fibonacci(10);
+	system("pause");
+	return 0;
+}
 ```
 备忘录法也是比较好理解的，创建了一个n+1大小的数组来保存求出的斐波拉契数列中的每一个值，在递归的时候如果发现前面fib（n）的值计算出来了就不再计算，如果未计算出来，则计算出来后保存在Memo数组中，下次在调用fib（n）的时候就不会重新递归了。比如上面的递归树中在计算fib（6）的时候先计算fib（5），调用fib（5）算出了fib（4）后，fib（6）再调用fib（4）就不会在递归fib（4）的子树了，因为fib（4）的值已经保存在Memo[4]中。
 
-②自底向上的动态规划
+### ②自底向上的动态规划
 备忘录法还是利用了递归，上面算法不管怎样，计算fib（6）的时候最后还是要计算出fib（1），fib（2），fib（3）……,那么何不先计算出fib（1），fib（2），fib（3）……,呢？这也就是动态规划的核心，先计算子问题，再由子问题计算父问题。
 ```C++
 public static int fib(int n)
@@ -114,17 +126,16 @@ public static int fib(int n)
 一般来说由于备忘录方式的动态规划方法使用了递归，递归的时候会产生额外的开销，使用自底向上的动态规划方法要比备忘录方法好。 
 你以为看懂了上面的例子就懂得了动态规划吗？那就too young too simple了。动态规划远远不止如此简单，下面先给出一个例子看看能否独立完成。然后再对动态规划的其他特性进行分析。
 
-动态规划小试牛刀
-例题：钢条切割
+## 动态规划小试牛刀
+### 例题：钢条切割
 
-
-
- 
- 
- 
-上面的例题来自于算法导论 
+![pic](https://img-blog.csdn.net/20170715221117648?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzMwOTg3MA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast) 
+![pic3](https://img-blog.csdn.net/20170715222316773?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzMwOTg3MA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+![pic4](https://img-blog.csdn.net/20170715222600560?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzMwOTg3MA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+![pic5](https://img-blog.csdn.net/20170715222733332?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzMwOTg3MA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+上面的例题来自于`算法导论 `
 关于题目的讲解就直接截图算法导论书上了这里就不展开讲。现在使用一下前面讲到三种方法来来实现一下。 
-①递归版本
+### ①递归版本
 ```C++
 public static int cut(int []p,int n)
     {
@@ -140,7 +151,7 @@ public static int cut(int []p,int n)
 ```
 递归很好理解，如果不懂可以看上面的讲解，递归的思路其实和回溯法是一样的，遍历所有解空间但这里和上面斐波拉契数列的不同之处在于，在每一层上都进行了一次最优解的选择，q=Math.max(q, p[i-1]+cut(p, n-i));这个段语句就是最优解选择，这里上一层的最优解与下一层的最优解相关。
 
-②备忘录版本
+### ②备忘录版本
 ```C++
 public static int cutMemo(int []p)
     {
@@ -167,7 +178,7 @@ public static int cutMemo(int []p)
 ```
 有了上面求斐波拉契数列的基础，理解备忘录方法也就不难了。备忘录方法无非是在递归的时候记录下已经调用过的子函数的值。这道钢条切割问题的经典之处在于自底向上的动态规划问题的处理，理解了这个也就理解了动态规划的精髓。
 
-③自底向上的动态规划
+### ③自底向上的动态规划
 ```C++
 public static int buttom_up_cut(int []p)
     {
@@ -260,13 +271,11 @@ Max Sum ★☆☆☆☆
 3、线性模型 
 Skiing ★☆☆☆☆
 
-总结
+## 总结
 弄懂动态规划问题的基本原理和动态规划问题的几个常见的模型，对于解决大部分的问题已经足够了。希望能对大家有所帮助，转载请标明出处http://write.blog.csdn.net/mdeditor#!postId=75193592，创作实在不容易，这篇博客花了我将近一个星期的时间。
 
-参考文献
+# 参考文献
 1.算法导论
 --------------------- 
-作者：HankingHu 
-来源：CSDN 
 原文：https://blog.csdn.net/u013309870/article/details/75193592 
-版权声明：本文为博主原创文章，转载请附上博文链接！
+
